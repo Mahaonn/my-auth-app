@@ -4,11 +4,6 @@
 /node_modules
 /.pnp
 .pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
 
 # testing
 /coverage
@@ -20,31 +15,37 @@
 # production
 /build
 
-# misc
+# OS files
 .DS_Store
+Thumbs.db
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# keys and certs
 *.pem
 
 # debug
 npm-debug.log*
-yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
 .env*
 
-# vercel
+# editor
+.vscode/
+
+# vercel local config
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# Prisma
-prisma/migration/
+# prisma
 prisma/dev.db
 
-# Build output
+# build output
 dist/
 
-/src/generated/prisma
