@@ -25,7 +25,7 @@ export default function RootLayout({
         <header
           style={{
             borderBottom: "1px solid #e5e7eb",
-            backgroundColor: "white",
+            backgroundColor: "var(--header)",
             padding: "1rem 2rem",
             display: "flex",
             justifyContent: "space-between",
@@ -38,7 +38,7 @@ export default function RootLayout({
               fontSize: "1.5rem",
               fontWeight: "bold",
               textDecoration: "none",
-              color: "#111",
+              color: "var(--foreground)",
             }}
           >
             MyApp
@@ -46,13 +46,13 @@ export default function RootLayout({
           <nav style={{ display: "flex", gap: "1.5rem" }}>
             <Link
               href="/signup"
-              style={{ color: "#2563eb", textDecoration: "none" }}
+              style={{ color: "var(--accent)", textDecoration: "none" }}
             >
               Регистрация
             </Link>
             <Link
               href="/login"
-              style={{ color: "#2563eb", textDecoration: "none" }}
+              style={{ color: "var(--accent)", textDecoration: "none" }}
             >
               Вход
             </Link>
@@ -67,6 +67,7 @@ export default function RootLayout({
             textAlign: "center",
             padding: "1rem",
             fontSize: "0.875rem",
+            backgroundColor: "var(--footer)",
             color: "var(--foreground)",
             marginTop: "auto",
           }}

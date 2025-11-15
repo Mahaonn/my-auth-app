@@ -1,6 +1,10 @@
+"use client"; // This is a client component
+
+import { useState } from "react";
 import SignupForm from "@/app/ui/signup-form";
 
 export default function SignupPage() {
+  const [hover, setHover] = useState(false);
   return (
     <main
       style={{
@@ -17,7 +21,7 @@ export default function SignupPage() {
         style={{
           width: "100%",
           maxWidth: "400px",
-          backgroundColor: "white",
+          backgroundColor: "var(--card-background)",
           padding: "2rem",
           borderRadius: "12px",
           boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
@@ -31,7 +35,7 @@ export default function SignupPage() {
             marginBottom: "1.5rem",
           }}
         >
-          Регистрация
+          Registration
         </h1>
         <SignupForm />
         <p
@@ -42,12 +46,18 @@ export default function SignupPage() {
             color: "var(--foreground)",
           }}
         >
-          Уже есть аккаунт?{" "}
+          Already have an account?{" "}
           <a
             href="/login"
-            style={{ color: "#2563eb", textDecoration: "underline" }}
+            style={{
+              backgroundColor: "transparent",
+              color: hover ? "#3b5ab9ff" : "var(--accent)",
+              textDecoration: "underline",
+            }}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
           >
-            Войти
+            Login
           </a>
         </p>
       </div>

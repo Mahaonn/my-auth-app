@@ -20,7 +20,6 @@ export default function LoginForm() {
         margin: "0 auto",
       }}
     >
-      {/* Email */}
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <label
           htmlFor="email"
@@ -38,14 +37,14 @@ export default function LoginForm() {
             padding: "0.75rem",
             fontSize: "1rem",
             borderRadius: "8px",
-            border: "1px solid #d1d5db",
+            border: "1px solid var(--foreground)",
             backgroundColor: "var(--background)",
             color: "var(--foreground)",
             outline: "none",
             transition: "border-color 0.2s",
           }}
-          onFocus={(e) => (e.target.style.borderColor = "#2563eb")}
-          onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
+          onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+          onBlur={(e) => (e.target.style.borderColor = "var(--foreground)")}
         />
         {state?.errors?.email && (
           <ul style={{ margin: 0, paddingLeft: "1.25rem", color: "#dc2626" }}>
@@ -64,26 +63,26 @@ export default function LoginForm() {
           htmlFor="password"
           style={{ fontWeight: "600", fontSize: "0.875rem" }}
         >
-          Пароль
+          Password
         </label>
         <input
           id="password"
           name="password"
           type="password"
-          placeholder="Пароль"
+          placeholder="Password"
           required
           style={{
             padding: "0.75rem",
             fontSize: "1rem",
             borderRadius: "8px",
-            border: "1px solid #d1d5db",
+            border: "1px solid var(--foreground)",
             backgroundColor: "var(--background)",
             color: "var(--foreground)",
             outline: "none",
             transition: "border-color 0.2s",
           }}
-          onFocus={(e) => (e.target.style.borderColor = "#2563eb")}
-          onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
+          onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+          onBlur={(e) => (e.target.style.borderColor = "var(--foreground)")}
         />
         {state?.errors?.password && (
           <ul style={{ margin: 0, paddingLeft: "1.25rem", color: "#dc2626" }}>
@@ -118,7 +117,7 @@ export default function LoginForm() {
           padding: "0.75rem",
           fontSize: "1rem",
           fontWeight: "600",
-          backgroundColor: "#2563eb",
+          backgroundColor: "var(--accent)",
           color: "white",
           border: "none",
           borderRadius: "8px",
@@ -129,7 +128,7 @@ export default function LoginForm() {
           (e.currentTarget.style.backgroundColor = "#1d4ed8")
         }
         onMouseLeave={(e) =>
-          (e.currentTarget.style.backgroundColor = "#2563eb")
+          (e.currentTarget.style.backgroundColor = "var(--accent)")
         }
       >
         Войти

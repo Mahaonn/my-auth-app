@@ -1,6 +1,11 @@
+"use client"; // Это клиентский компонент для интерактивности (хуки React)
+
+import { useState } from "react";
 import LoginForm from "@/app/ui/login-form";
 
 export default function LoginPage() {
+  const [hover, setHover] = useState(false);
+
   return (
     <main
       style={{
@@ -17,7 +22,7 @@ export default function LoginPage() {
         style={{
           width: "100%",
           maxWidth: "400px",
-          backgroundColor: "white",
+          backgroundColor: "var(--card-background)",
           padding: "2rem",
           borderRadius: "12px",
           boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
@@ -31,7 +36,7 @@ export default function LoginPage() {
             marginBottom: "1.5rem",
           }}
         >
-          Вход
+          Login
         </h1>
         <LoginForm />
         <p
@@ -42,10 +47,16 @@ export default function LoginPage() {
             color: "var(--foreground)",
           }}
         >
-          Нет аккаунта?{" "}
+          Don't have an account?{" "}
           <a
             href="/signup"
-            style={{ color: "#2563eb", textDecoration: "underline" }}
+            style={{
+              backgroundColor: "transparent",
+              color: hover ? "#3b5ab9ff" : "var(--accent)",
+              textDecoration: "underline",
+            }}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
           >
             Зарегистрироваться
           </a>
