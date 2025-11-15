@@ -47,7 +47,7 @@ export default function LoginPage() {
             color: "var(--foreground)",
           }}
         >
-          Don't have an account?{" "}
+          Don&#39;t have an account?{" "}
           <a
             href="/signup"
             style={{
