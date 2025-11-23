@@ -1,12 +1,20 @@
 "use client"; // Это клиентский компонент для интерактивности (хуки React)
 
-import { useActionState } from "react"; // Хук для обработки состояния формы из Server Action
+import { useRouter } from "next/navigation"; // Хук для перенаправления
+import { useActionState, useEffect } from "react"; // Хук для обработки состояния формы из auth.ts
 import { login } from "../actions/auth"; // Импортируем функцию login из auth.ts
 
 // Тип FormState берётся из auth.ts, но для простоты не указываем (TypeScript подхватит)
 
 export default function LoginForm() {
-  const [state, action] = useActionState(login, undefined); // Связываем с server action login
+  const router = useRouter(); // Хук для перенаправления
+  const [state, action, pending] = useActionState(login, undefined); // Связываем с server action login
+
+  useEffect(() => {
+    if (state?.success) {
+      router.push("/profile"); // Перенаправляем на профиль при успешном входе
+    }
+  }, [state?.success, router]); // Следим за изменением состояния успеха643
 
   return (
     <form
@@ -131,7 +139,7 @@ export default function LoginForm() {
           (e.currentTarget.style.backgroundColor = "var(--accent)")
         }
       >
-        Войти
+        {pending ? "Signing in..." : "Sign In"}
       </button>
     </form>
   );

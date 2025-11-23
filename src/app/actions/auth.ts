@@ -1,31 +1,31 @@
-"use server"; // Это директива Next.js: Все функции в файле — Server Actions (выполняются только на сервере)
+"use server"; // Next.js directive: all functions in this file are Server Actions (executed only on the server)
 
-import { z } from "zod"; // Библиотека для валидации данных
-import bcrypt from "bcrypt"; // Для хэширования паролей
-import { Prisma } from "@prisma/client"; // Для обработки ошибок Prisma
-import { db } from "../lib/db"; // Подключение к базе данных (Prisma Client)
-import { createSession } from "../lib/session"; // Функция для создания сессии
-import { deleteSession } from "../lib/session"; // Функция для удаления сессии
-import { redirect } from "next/navigation"; // Для перенаправления после успеха
+import { z } from "zod"; // Library for data validation
+import bcrypt from "bcrypt"; // For password hashing
+import { Prisma } from "@prisma/client"; // For handling Prisma errors
+import { db } from "../lib/db"; // Prisma Client connection
+import { createSession } from "../lib/session"; // Function to create a session
+import { deleteSession } from "../lib/session"; // Function to delete a session
+import { redirect } from "next/navigation"; // For navigation redirects after success
 
-// Схема валидации для регистрации (signup)
+// Validation schema for signup
 const SignupSchema = z.object({
-  name: z.string().min(2, "Имя минимум 2 символа"),
-  email: z.string().email("Неверный email"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email"),
   password: z
     .string()
-    .min(8, "Пароль минимум 8 символов")
-    .regex(/[a-zA-Z]/, "Должен содержать хотя бы одну букву")
-    .regex(/[0-9]/, "Должен содержать хотя бы одну цифру"),
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[a-zA-Z]/, "Must contain at least one letter")
+    .regex(/[0-9]/, "Must contain at least one number"),
 });
 
-// Схема валидации для логина (login) — проще, без имени
+// Validation schema for login — simpler, no name field
 const LoginSchema = z.object({
-  email: z.string().email("Неверный email"),
-  password: z.string().min(8, "Пароль минимум 8 символов"),
+  email: z.string().email("Invalid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-// Тип для состояния формы (возвращается в клиент для отображения ошибок)
+// Type for form state (returned to client for displaying errors)
 type FormState =
   | {
       errors?: {
@@ -34,15 +34,16 @@ type FormState =
         password?: string[];
       };
       message?: string;
+      success?: boolean; // ✅ new field
     }
   | undefined;
 
-// Функция для регистрации (signup)
+// Signup function
 export async function signup(
-  prevState: FormState,
+  _prevState: FormState, // Can be used to access the previous form state (e.g., show past errors, accumulate messages, or track login attempts)
   formData: FormData
 ): Promise<FormState> {
-  // Валидация данных из формы
+  // Validate form data
   const validated = SignupSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -54,48 +55,48 @@ export async function signup(
   }
 
   const { name, email, password } = validated.data;
-  const hashedPassword = await bcrypt.hash(password, 10); // Хэшируем пароль для безопасности
+  const hashedPassword = await bcrypt.hash(password, 10); // Hash password for security
 
   try {
-    // Проверяем, существует ли пользователь с таким email
+    // Check if user with this email already exists
     const existingUser = await db.user.findUnique({ where: { email } });
     if (existingUser) {
       return {
-        message:
-          "Email уже существует. Попробуйте войти или используйте другой email.",
+        message: "Email already exists. Try logging in or use another email.",
       };
     }
 
-    // Создаём нового пользователя в базе
+    // Create new user in the database
     const user = await db.user.create({
       data: { name, email, password: hashedPassword },
     });
 
-    // Создаём сессию и перенаправляем
+    // Create session and redirect
     await createSession(user.id.toString());
-    redirect("/profile");
+    return { success: true };
   } catch (error) {
-    // Обработка ошибок от Prisma (на случай unique violation или других)
+    // Handle Prisma errors (e.g. unique violation)
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
-        // Код для unique violation
+        // Unique violation code
         return {
-          message:
-            "Email уже существует. Попробуйте войти или используйте другой email.",
+          message: "Email already exists. Try logging in or use another email.",
         };
       }
     }
-    console.error(error); // Логируем ошибку для дебага
-    return { message: "Произошла ошибка при регистрации. Попробуйте позже." };
+    console.error(error); // Log error for debugging
+    return {
+      message: "An error occurred during signup. Please try again later.",
+    };
   }
 }
 
-// Функция для логина (login)
+// Login function
 export async function login(
-  prevState: FormState,
+  _prevState: FormState, // Can be used to access the previous form state (e.g., show past errors, accumulate messages, or track login attempts)
   formData: FormData
 ): Promise<FormState> {
-  // Валидация данных из формы
+  // Validate form data
   const validated = LoginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -108,30 +109,32 @@ export async function login(
   const { email, password } = validated.data;
 
   try {
-    // Находим пользователя по email
+    // Find user by email
     const user = await db.user.findUnique({ where: { email } });
     if (!user) {
-      return { message: "Неверный email или пароль." }; // Не уточняем, что именно неверно — для безопасности
+      return { message: "Invalid email or password." }; // Do not specify which one is wrong for security
     }
 
-    // Сравниваем введённый пароль с хэшированным в базе
+    // Compare entered password with hashed password in DB
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return { message: "Неверный email или пароль." };
+      return { message: "Invalid email or password." };
     }
 
-    // Создаём сессию и перенаправляем
+    // Create session and redirect
     await createSession(user.id.toString());
-    redirect("/profile");
+    return { success: true };
   } catch (error) {
-    console.error(error); // Логируем ошибку
-    return { message: "Произошла ошибка при входе. Попробуйте позже." };
+    console.error(error); // Log error
+    return {
+      message: "An error occurred during login. Please try again later.",
+    };
   }
 }
 
-// Функция для логаута (logout)
+// Logout function
 export async function logout() {
-  await deleteSession(); // Удаляем сессию (куку)
-  redirect("/login"); // Перенаправляем на страницу логина
-  // Возвращать ничего не нужно, т.к. будет редирект
+  await deleteSession(); // Delete session (cookie)
+  redirect("/login"); // Redirect to login page
+  // No return needed since redirect is performed
 }

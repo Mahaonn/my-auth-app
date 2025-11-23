@@ -1,10 +1,18 @@
 "use client"; // This is a client component
 
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
 import { signup } from "../actions/auth";
 
 export default function SignupForm() {
-  const [state, action] = useActionState(signup, undefined);
+  const router = useRouter();
+  const [state, action, pending] = useActionState(signup, undefined);
+
+  useEffect(() => {
+    if (state?.success) {
+      router.push("/profile");
+    }
+  }, [state?.success, router]);
 
   return (
     <form
@@ -142,6 +150,7 @@ export default function SignupForm() {
       )}
       <button
         type="submit"
+        disabled={pending}
         style={{
           marginTop: "0.5rem",
           padding: "0.75rem",
@@ -161,7 +170,7 @@ export default function SignupForm() {
           (e.currentTarget.style.backgroundColor = "var(--accent)")
         }
       >
-        Sign Up
+        {pending ? "Signing up..." : "Sign Up"}
       </button>
     </form>
   );

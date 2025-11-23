@@ -16,7 +16,7 @@ export async function getUserFromSession() {
     : null; // return user data without password
 }
 
-const secret = process.env.SESSION_SECRET; // Добавь в .env: SESSION_SECRET=твой_случайный_ключ (сгенерируй openssl rand -base64 32)
+const secret = process.env.SESSION_SECRET;
 const key = new TextEncoder().encode(secret);
 
 export async function encrypt(payload: { userId: string; expires: Date }) {
